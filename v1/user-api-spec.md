@@ -16,7 +16,7 @@ User login/logouts. If we go with Drupal-like sessions, I imagine we'll need `PO
 ### User GET
 Get profile data for a specific user. This can be retrieved with either a Drupal UID, a Mongo UID, a mobile phone number, or an email address.
 
-**Endpoints:**
+**Endpoints:**  
 ```
 /user/<:drupal_uid>
 /user/<:mongo_uid>
@@ -24,19 +24,19 @@ Get profile data for a specific user. This can be retrieved with either a Drupal
 /user/<:email>
 ```
 
-**Request Method:**
+**Request Method:**  
 `GET`
 
-**Successful Responses:**
+**Successful Responses:**  
 `200 OK`: Request succeeded.
 
-**Error Responses:**
+**Error Responses:**  
 `404 Not Found`: The resource does not exist.
 
-**Example Curl:**
+**Example Curl:**  
 TODO
 
-**Example Response:**
+**Example Response:**  
 ```
 200 OK
 
@@ -63,15 +63,15 @@ TODO
 ### User POST
 Create and/or update a user resource.
 
-**Endpoint:**
+**Endpoint:**  
 ```
 /user
 ```
 
-**Request Method:**
+**Request Method:**  
 `POST`
 
-**Parameters:**
+**Parameters:**  
 Either a mobile number or email address needs to be provided in order to create a user. To update a user resource, a mobile number, email address, Drupal UID, or Mongo UID can be used.
 
 Content-Type: application/json
@@ -133,16 +133,16 @@ Content-Type: application/json
 }
 ```
 
-**Successful Responses:**
-`201 Created`: When creating a user, request fulfilled synchronously.
+**Successful Responses:**  
+`201 Created`: When creating a user, request fulfilled synchronously.  
 `202 Accepted`: When updating a user, request accepted to be processed asynchronously.
 
-**Error Responses:**
+**Error Responses:**  
 
-**Example Curl:**
+**Example Curl:**  
 TODO
 
-**Example Response:**
+**Example Response:**  
 For successful requests that create a document, a 201 status code will be returned with a copy of the contents of the resource created.
 ```
 201 Created
@@ -159,7 +159,7 @@ For successful requests that create a document, a 201 status code will be return
 ### User Campaigns GET
 Get the campaign actions of a specific user. This can be retrieved with either a Drupal UID, a Mongo UID, a mobile phone number, or an email address.
 
-**Endpoints:**
+**Endpoints:**  
 ```
 /user/<:drupal_uid>/campaigns
 /user/<:mongo_uid>/campaigns
@@ -167,19 +167,19 @@ Get the campaign actions of a specific user. This can be retrieved with either a
 /user/<:email>/campaigns
 ```
 
-**Request Method:**
+**Request Method:**  
 `GET`
 
-**Successful Responses:**
+**Successful Responses:**  
 `200 OK`: Request succeeded.
 
-**Error Responses:**
+**Error Responses:**  
 `404 Not Found`: The resource does not exist.
 
-**Example Curl:**
+**Example Curl:**  
 TODO
 
-**Example Response:**
+**Example Response:**  
 An empty array is returned if no campaign actions have been taken yet:
 ```
 200 OK
@@ -207,7 +207,7 @@ If campaign actions do exist, they'll be returned in an array:
 ### User Campaigns POST
 Update a user's campaign actions.
 
-**Endpoints:**
+**Endpoints:**  
 ```
 /user/<:drupal_uid>/campaigns
 /user/<:mongo_uid>/campaigns
@@ -215,10 +215,10 @@ Update a user's campaign actions.
 /user/<:email>/campaigns
 ```
 
-**Request Method:**
+**Request Method:**  
 `POST`
 
-**Parameters:**
+**Parameters:**  
 Content-Type: application/json
 ```
 {
@@ -240,16 +240,16 @@ Content-Type: application/json
 }
 ```
 
-**Successful Responses:**
+**Successful Responses:**  
 `202 Accepted`: Request accepted to be processed asynchronously.
 
-**Error Responses:**
+**Error Responses:**  
 `404 Not Found`: The resource does not exist.
 
-**Example Curl:**
+**Example Curl:**  
 TODO
 
-**Example Response:**
+**Example Response:**  
 ```
 202 Accepted
 ```
@@ -260,89 +260,89 @@ For systems like the digest e-mail creation, we can offer ways to query for a gr
 ### All Users
 Get all users. By default, results will be paginated only returning a subset of all users.
 
-**Endpoint:**
+**Endpoint:**  
 ```
 /users
 ```
 
-**Request Method:**
+**Request Method:**  
 `GET`
 
-**Additional Parameters:**
+**Additional Parameters:**  
 `page=<:page_num>`: For pagination. Specifies the page number to skip to. _Default: 1_
 
 `page_size=<:page_size>:` For pagination. Requires the `page` param to be set. Sets the page size. _Default: 100_
 
-**Successful Responses:**
+**Successful Responses:**  
 `200 OK`: Request succeeded. Full user documents will be returned in an array. A query with no results will return an empty array.
 
-**Example Curl:**
+**Example Curl:**  
 TODO
 
 #### Users by Anniversary Date
 Get all users who have an anniversary with subscribing to DoSomething.org.
 
-**Query:**
+**Query:**  
 ```
 /users?anniversary_date=<:m-d-Y>
 ```
 
-**Request Method:**
+**Request Method:**  
 `GET`
 
-**Additional Parameters:**
+**Additional Parameters:**  
 `page=<:page_num>`: For pagination. Specifies the page number to skip to. _Default: 1_
 
 `page_size=<:page_size>:` For pagination. Requires the `page` param to be set. Sets the page size. _Default: 100_
 
-**Successful Responses:**
+**Successful Responses:**  
 `200 OK`: Request succeeded. Full user documents will be returned in an array. A query with no results will return an empty array.
 
-**Example Curl:**
+**Example Curl:**  
 TODO
 
 #### Users by Birthdate
 Get all users who have a birthday on a given day.
 
-**Query:**
+**Query:**  
 ```
 /users?birthdate=<:m-d-Y>
 ```
 
-**Request Method:**
+**Request Method:**  
 `GET`
 
-**Additional Parameters:**
+**Additional Parameters:**  
 `page=<:page_num>`: For pagination. Specifies the page number to skip to. _Default: 1_
 
 `page_size=<:page_size>:` For pagination. Requires the `page` param to be set. Sets the page size. _Default: 100_
 
-**Successful Responses:**
+**Successful Responses:**  
 `200 OK`: Request succeeded. Full user documents will be returned in an array. A query with no results will return an empty array.
 
-**Example Curl:**
+**Example Curl:**  
 TODO
 
 #### Users with Campaign Actions
 Get all users who have taken a campaign action.
 
-**Query:**
+**Query:**  
 ```
 /users?exclude_no_campaigns=1
 ```
 
-**Request Method:**
+**Request Method:**  
 `GET`
 
-**Additional Parameters:**
+**Additional Parameters:**  
 `page=<:page_num>`: For pagination. Specifies the page number to skip to. _Default: 1_
 
 `page_size=<:page_size>:` For pagination. Requires the `page` param to be set. Sets the page size. _Default: 100_
 
-**Successful Responses:**
+**Successful Responses:**  
 `200 OK`: Request succeeded. Full user documents will be returned in an array. A query with no results will return an empty array.
 
-**Example Curl:**
+**Example Curl:**  
 TODO
 
 ## Other Status Codes
