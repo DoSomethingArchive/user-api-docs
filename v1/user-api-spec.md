@@ -14,12 +14,12 @@ User login/logouts. If we go with Drupal-like sessions, I imagine we'll need `PO
 ## User Profile
 
 ### User GET
-Get profile data for a specific user. This can be retrieved with either a Drupal UID, a Mongo UID, a mobile phone number, or an email address.
+Get profile data for a specific user. This can be retrieved with either a Drupal UID, the database-generated ID, a mobile phone number, or an email address.
 
 **Endpoints:**  
 ```
 /user/<:drupal_uid>
-/user/<:mongo_uid>
+/user/<:doc_id>
 /user/<:mobile>
 /user/<:email>
 ```
@@ -45,7 +45,7 @@ TODO
     first_name: First,
     last_name: Last,
     drupal_uid: 123456,
-    mongo_uid: some sort of hash value,
+    doc_id: some sort of hash value,
     campaigns: [
         {
             nid: 123,
@@ -72,7 +72,7 @@ Create and/or update a user resource.
 `POST`
 
 **Parameters:**  
-Either a mobile number or email address needs to be provided in order to create a user. To update a user resource, a mobile number, email address, Drupal UID, or Mongo UID can be used.
+Either a mobile number or email address needs to be provided in order to create a user. To update a user resource, a mobile number, email address, Drupal UID, or document ID can be used.
 
 Content-Type: application/json
 ```
@@ -86,8 +86,8 @@ Content-Type: application/json
     /* Drupal UID */
     drupal_uid: Number,
 
-    /* Mongo-assigned ID */
-    mongo_uid: String,
+    /* Database-generated ID */
+    doc_id: String,
 
     /* Mailing address */
     addr_street1: String,
@@ -148,6 +148,7 @@ For successful requests that create a document, a 201 status code will be return
 201 Created
 
 {
+    doc_id: some sort of hash value,
     email: "test@dosomething.org",
     first_name: First,
     last_name: Last,
@@ -157,12 +158,12 @@ For successful requests that create a document, a 201 status code will be return
 ```
 
 ### User Campaigns GET
-Get the campaign actions of a specific user. This can be retrieved with either a Drupal UID, a Mongo UID, a mobile phone number, or an email address.
+Get the campaign actions of a specific user. This can be retrieved with either a Drupal UID, the document ID, a mobile phone number, or an email address.
 
 **Endpoints:**  
 ```
 /user/<:drupal_uid>/campaigns
-/user/<:mongo_uid>/campaigns
+/user/<:doc_id>/campaigns
 /user/<:mobile>/campaigns
 /user/<:email>/campaigns
 ```
@@ -210,7 +211,7 @@ Update a user's campaign actions.
 **Endpoints:**  
 ```
 /user/<:drupal_uid>/campaigns
-/user/<:mongo_uid>/campaigns
+/user/<:doc_id>/campaigns
 /user/<:mobile>/campaigns
 /user/<:email>/campaigns
 ```
