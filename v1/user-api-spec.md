@@ -281,11 +281,12 @@ Get all users. By default, results will be paginated only returning a subset of 
 TODO
 
 #### Users by Anniversary Date
-Get all users who have an anniversary with subscribing to DoSomething.org.
+Get all users who have an anniversary with subscribing to DoSomething.org. If a year is not specified, then it will return all users who have an anniversary on that day across all years.
 
 **Query:**  
 ```
 /users?anniversary_date=<:m-d-Y>
+/users?anniversary_date=<:m-d>
 ```
 
 **Request Method:**  
@@ -303,11 +304,12 @@ Get all users who have an anniversary with subscribing to DoSomething.org.
 TODO
 
 #### Users by Birthdate
-Get all users who have a birthday on a given day.
+Get all users who have a birthday on a given day. If a year is not specified, then it will return all users who have a birthday on that day across all years.
 
 **Query:**  
 ```
 /users?birthdate=<:m-d-Y>
+/user?birthdate=<:m-d>
 ```
 
 **Request Method:**  
