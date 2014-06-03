@@ -113,6 +113,18 @@ Content-Type: application/json
 
     /* SMS subscription status */
     mobile_status: Number,
+    
+    /* User roles - for determining access rights. Copying from Drupal user DB for now. */
+    roles: [
+        1, /* authenticated user */
+        3, /* administrator */
+        4, /* editor */
+        6, /* communications team */
+        7, /* member support */
+        
+        /* POTENTIAL FUTURE ROLES */
+        8, /* 3rd party developer - particularly for hackathons and such */
+    ],
 
     /* GreatSchools ID of the user's school */
     school_gsid: Number,
