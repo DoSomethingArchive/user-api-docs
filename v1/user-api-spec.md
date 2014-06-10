@@ -77,7 +77,7 @@ Either a mobile number or email address needs to be provided in order to create 
 Content-Type: application/json
 ```
 {
-    /* Email address */
+    /* Email address - forced to lowercase */
     email: String,
 
     /* Mobile phone number */
