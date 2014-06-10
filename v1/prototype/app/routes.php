@@ -15,3 +15,23 @@ Route::get('/', function()
 {
 	return View::make('hello');
 });
+
+/**
+ * POST /oauth/access_token
+ *
+ * Retrieve an access token to authorize future API calls.
+ */
+Route::post('/oauth/access_token', function()
+{
+  return AuthorizationServer::performAccessTokenFlow();
+});
+
+/**
+ * GET /user
+ *
+ * A valid token is required to access this resource.
+ */
+Route::get('/user', array('before' => 'oauth', function()
+{
+  return 'This is the /user endpoint.';
+}));
