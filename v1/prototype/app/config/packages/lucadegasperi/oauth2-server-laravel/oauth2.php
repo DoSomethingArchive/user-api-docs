@@ -61,23 +61,8 @@ return array(
     'grant_types' => array(
 
         'password' => array(
-            'class'            => 'League\OAuth2\Server\Grant\Password',
+            'class'            => 'DSPassword',
             'access_token_ttl' => 604800,
-            'callback'         => function ($username, $password) {
-
-                $credentials = array(
-                    'email' => $username,
-                    'password' => $password,
-                );
-
-                $valid = Auth::validate($credentials);
-
-                if (!$valid) {
-                    return false;
-                }
-
-                return Auth::getProvider()->retrieveByCredentials($credentials)->id;
-            }
         ),
 
         'client_credentials' => array(
