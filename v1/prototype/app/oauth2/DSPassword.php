@@ -1,5 +1,8 @@
 <?php
 
+use Carbon\Carbon;
+use League\OAuth2\Server\Util\SecureKey;
+
 /**
  * Custom password grant class for OAuth2 implementation.
  */
@@ -19,6 +22,7 @@ class DSPassword extends League\OAuth2\Server\Grant\Password {
    * @return array
    */
   public function completeFlow($inputParams = null) {
+
     $authParams = $this->authServer->getParam(
       array(
         'client_id',
@@ -40,17 +44,18 @@ class DSPassword extends League\OAuth2\Server\Grant\Password {
       throw new Exception\ClientException(sprintf($this->authServer->getExceptionMessage('invalid_request'), 'password'), 0);
     }
 
+    $userId = 0;
     if (!is_null($authParams['email'])) {
-      $this->validateUser('email', $authParams['email'], $authParams['password']);
+      $userId = $this->validateUser('email', $authParams['email'], $authParams['password']);
     }
     elseif (!is_null($authParams['phone'])) {
-      $this->validateUser('phone', $authParams['phone'], $authParams['password']);
+      $userId = $this->validateUser('phone', $authParams['phone'], $authParams['password']);
     }
     elseif (!is_null($authParams['drupal_uid'])) {
-      $this->validateUser('drupal_uid', $authParams['drupal_uid'], $authParams['password']);
+      $userId = $this->validateUser('drupal_uid', $authParams['drupal_uid'], $authParams['password']);
     }
     elseif (!is_null($authParams['username'])) {
-      $this->validateUser('username', $authParams['username'], $authParams['password']);
+      $userId = $this->validateUser('username', $authParams['username'], $authParams['password']);
     }
     else {
       throw new Exception\ClientException('The request is missing one of the required user identifying parameters: email, phone, drupal_uid, or username.', 0);
@@ -58,13 +63,8 @@ class DSPassword extends League\OAuth2\Server\Grant\Password {
 
     // @todo Validate any scopes in the request.
 
-    // @todo Generate or retrieve the access token.
-
-    // @todo If new token is generated, create a new session.
-
-    // @todo Associate the new access token with the new session.
-
-    // @todo Associates scopes with the access token.
+    // Generate or retrieve the access token.
+    $this->assignAccessToken($userId, $accessToken, $accessTokenExpires, $accessTokenExpiresIn);
 
     $response = array(
       'access_token'  =>  $accessToken,
@@ -96,6 +96,7 @@ class DSPassword extends League\OAuth2\Server\Grant\Password {
    * @param string $param
    * @param string $user
    * @param string $password
+   * @return string
    */
   private function validateUser($param, $user, $password) {
     // User data payload.
@@ -130,5 +131,71 @@ class DSPassword extends League\OAuth2\Server\Grant\Password {
     if ($unauthorized) {
       throw new Exception\ClientException($this->authServer->getExceptionMessage('invalid_credentials'), 0);
     }
+
+    // @todo Get user id from response body and return.
+    return $userId;
   }
+
+  /**
+   * Assigns the access token for the user's request and updates or creates
+   * the session entries in the database.
+   *
+   * @param string $userId
+   * @param string &$accessToken
+   * @param string &$accessTokenExpires
+   * @param string &$accessTokenExpiresIn
+   * @return string
+   */
+  private function assignAccessToken($userId, &$accessToken, &$accessTokenExpires, &$accessTokenExpiresIn) {
+    // @todo - everywhere DB::table is used here, subclass LucaDegasperi\OAuth2Server\Repositories\FluentSession
+    // and add wrappers to these database queries.
+
+    // Check if this user already has a session.
+    $sessions = DB::table('oauth_sessions')
+                          ->where('owner_id', $userId)
+                          ->where('owner_type', 'user')
+                          ->take(1)
+                          ->get();
+
+    // Existing session found for this user.
+    if (count($sessions) > 0) {
+      // Get the access token info for that session.
+      $tokens = DB::table('oauth_session_access_tokens')
+                          ->where('session_id', $sessions[0]->id)
+                          ->get();
+
+      if (count($tokens) > 0) {
+        // Update and pass back by reference the access token info.
+        $accessToken = $tokens[0]->access_token;
+        $accessTokenExpiresIn = ($this->accessTokenTTL !== null) ? $this->accessTokenTTL : $this->authServer->getAccessTokenTTL();
+        $accessTokenExpires = time() + $accessTokenExpiresIn;
+
+        DB::table('oauth_session_access_tokens')
+                  ->where('session_id', $sessions[0]->id)
+                  ->update(array(
+                      'access_token_expires' => $accessTokenExpires,
+                      'updated_at' => Carbon::now(),
+                    ));
+      }
+    }
+    else {
+      // If we're here, then session and token don't exist for this user.
+      // Generate a new access token.
+      $accessToken = SecureKey::make();
+      $accessTokenExpiresIn = ($this->accessTokenTTL !== null) ? $this->accessTokenTTL : $this->authServer->getAccessTokenTTL();
+      $accessTokenExpires = time() + $accessTokenExpiresIn;
+
+      // Create a new session
+      $sessionId = $this->authServer->getStorage('session')->createSession($authParams['client_id'], 'user', $userId);
+
+      // Associate an access token with the session
+      $accessTokenId = $this->authServer->getStorage('session')->associateAccessToken($sessionId, $accessToken, $accessTokenExpires);
+
+      // Associate scopes with the access token
+      foreach ($authParams['scopes'] as $scope) {
+          $this->authServer->getStorage('session')->associateScope($accessTokenId, $scope['id']);
+      }
+    }
+  }
+
 }
