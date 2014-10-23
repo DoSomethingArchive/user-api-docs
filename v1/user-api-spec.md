@@ -21,37 +21,82 @@ URL | HTTP Verb | Functionality
 ## Authentication
 
 <h3 id="logging-in">Logging In</h3>
+
+```
+POST /login
+```
+
 <h3 id="logging-out">Logging Out</h3>
+
+```
+POST /logout
+```
+
 <h3 id="registering-a-user">Registering a User</h3>
+Create a new user.
+
+```
+POST /users/create
+```
+
+**Parameters:**  
+In addition to the password, either a mobile number or email is required.
+```
+Content-Type: application/json
+
+{
+    /* Required if 'mobile' is not provided */
+    email: String,
+
+    /* Required if 'email' is not provided */
+    mobile: String,
+
+    /* Required */
+    password: String,
+
+    /* Optional */
+    birthdate: Date,
+    first_name: String
+}
+```
+
+**Example Curl:**  
+`TODO`
+
+**Example Response:**
+Request fulfilled synchronously.
+```
+201 Created
+Content-Type: application/json
+
+{
+    created_at: 2000-01-01T00:00:00Z,
+    doc_id: some sort of hash value
+}
+```
 
 ## User Profile
 
 <h3 id="retrieving-a-user">Retrieving a User</h3>
 Get profile data for a specific user. This can be retrieved with either a Drupal UID, the database-generated ID, a mobile phone number, or an email address.
 
-**Endpoints:**  
 ```
-/users/<drupal_uid>
-/users/<doc_id>
-/users/<mobile>
-/users/<email>
+GET /users/<drupal_uid>
+GET /users/<doc_id>
+GET /users/<mobile>
+GET /users/<email>
 ```
-
-**Request Method:**  
-`GET`
-
-**Successful Responses:**  
-`200 OK`: Request succeeded.
 
 **Error Responses:**  
 `404 Not Found`: The resource does not exist.
 
 **Example Curl:**  
-TODO
+`TODO`
 
 **Example Response:**  
 ```
 200 OK
+Content-Type: application/json
 
 {
     email: "test@dosomething.org",
@@ -76,22 +121,18 @@ TODO
 <h3 id="updating-a-user">Updating a User</h3>
 Update a user resource.
 
-**Endpoint:**  
 ```
-/users/<drupal_uid>
-/users/<doc_id>
-/users/<mobile>
-/users/<email>
+POST /users/<drupal_uid>
+POST /users/<doc_id>
+POST /users/<mobile>
+POST /users/<email>
 ```
-
-**Request Method:**  
-`POST`
 
 **Parameters:**  
-Either a mobile number or email address needs to be provided in order to create a user. To update a user resource, a mobile number, email address, Drupal UID, or document ID can be used.
-
-Content-Type: application/json
+To update a user resource, a mobile number, email address, Drupal UID, or document ID needs to be provided in the URL.
 ```
+Content-Type: application/json
+
 {
     /* Email address - forced to lowercase */
     email: String,
@@ -161,57 +202,44 @@ Content-Type: application/json
 }
 ```
 
-**Successful Responses:**  
-`201 Created`: When creating a user, request fulfilled synchronously.  
-`202 Accepted`: When updating a user, request accepted to be processed asynchronously.
-
 **Error Responses:**  
+`TODO`
 
 **Example Curl:**  
-TODO
+`TODO`
 
 **Example Response:**  
-For successful requests that create a document, a 201 status code will be returned with a copy of the contents of the resource created.
+Request accepted to be processed asynchronously.
 ```
-201 Created
+202 Accepted
+Content-Type: application/json
 
 {
-    doc_id: some sort of hash value,
-    email: "test@dosomething.org",
-    first_name: First,
-    last_name: Last,
-    birthdate: 2000-01-01T00:00:00Z,
-    email_status: 1
+    updated_at: 2000-01-01T00:00:00Z
 }
 ```
 
-<h3 id="retrieving-usrs-campaigns">Retrieving a User's Campaigns</h3>
+<h3 id="retrieving-users-campaigns">Retrieving a User's Campaigns</h3>
 Get the campaign actions of a specific user. This can be retrieved with either a Drupal UID, the document ID, a mobile phone number, or an email address.
 
-**Endpoints:**  
 ```
-/users/<drupal_uid>/campaigns
-/users/<doc_id>/campaigns
-/users/<mobile>/campaigns
-/users/<email>/campaigns
+GET /users/<drupal_uid>/campaigns
+GET /users/<doc_id>/campaigns
+GET /users/<mobile>/campaigns
+GET /users/<email>/campaigns
 ```
-
-**Request Method:**  
-`GET`
-
-**Successful Responses:**  
-`200 OK`: Request succeeded.
 
 **Error Responses:**  
 `404 Not Found`: The resource does not exist.
 
 **Example Curl:**  
-TODO
+`TODO`
 
 **Example Response:**  
 An empty array is returned if no campaign actions have been taken yet:
 ```
 200 OK
+Content-Type: application/json
 
 []
 ```
@@ -219,6 +247,7 @@ An empty array is returned if no campaign actions have been taken yet:
 If campaign actions do exist, they'll be returned in an array:
 ```
 200 OK
+Content-Type: application/json
 
 [
     {
@@ -236,20 +265,17 @@ If campaign actions do exist, they'll be returned in an array:
 <h3 id="updating-users-campaigns">Updating Info for all of a user's Campaign</h3>
 Update a user's campaign actions.
 
-**Endpoints:**  
 ```
-/users/<drupal_uid>/campaigns
-/users/<doc_id>/campaigns
-/users/<mobile>/campaigns
-/users/<email>/campaigns
+POST /users/<drupal_uid>/campaigns
+POST /users/<doc_id>/campaigns
+POST /users/<mobile>/campaigns
+POST /users/<email>/campaigns
 ```
-
-**Request Method:**  
-`POST`
 
 **Parameters:**  
-Content-Type: application/json
 ```
+Content-Type: application/json
+
 {
     /* List of campaign actions */
     campaigns: Object Array
@@ -269,16 +295,14 @@ Content-Type: application/json
 }
 ```
 
-**Successful Responses:**  
-`202 Accepted`: Request accepted to be processed asynchronously.
-
 **Error Responses:**  
 `404 Not Found`: The resource does not exist.
 
 **Example Curl:**  
-TODO
+`TODO`
 
 **Example Response:**  
+Request accepted to be processed asynchronously.
 ```
 202 Accepted
 ```
@@ -291,13 +315,9 @@ For systems like the digest e-mail creation, we can offer ways to query for a gr
 <h3 id="retrieving-users">Retrieving Users</h3>
 Get all users. By default, results will be paginated only returning a subset of all users.
 
-**Endpoint:**  
 ```
-/users
+GET /users
 ```
-
-**Request Method:**  
-`GET`
 
 **Additional Parameters:**  
 `page=<page_num>`: For pagination. Specifies the page number to skip to. _Default: 1_
@@ -308,19 +328,16 @@ Get all users. By default, results will be paginated only returning a subset of 
 `200 OK`: Request succeeded. Full user documents will be returned in an array. A query with no results will return an empty array.
 
 **Example Curl:**  
-TODO
+`TODO`
 
 #### Users by Anniversary Date
 Get all users who have an anniversary with subscribing to DoSomething.org. If a year is not specified, then it will return all users who have an anniversary on that day across all years.
 
 **Query:**  
 ```
-/users?anniversary_date=<m-d-Y>
-/users?anniversary_date=<m-d>
+GET /users?anniversary_date=<m-d-Y>
+GET /users?anniversary_date=<m-d>
 ```
-
-**Request Method:**  
-`GET`
 
 **Additional Parameters:**  
 `page=<page_num>`: For pagination. Specifies the page number to skip to. _Default: 1_
@@ -331,19 +348,16 @@ Get all users who have an anniversary with subscribing to DoSomething.org. If a 
 `200 OK`: Request succeeded. Full user documents will be returned in an array. A query with no results will return an empty array.
 
 **Example Curl:**  
-TODO
+`TODO`
 
 #### Users by Birthdate
 Get all users who have a birthday on a given day. If a year is not specified, then it will return all users who have a birthday on that day across all years.
 
 **Query:**  
 ```
-/users?birthdate=<m-d-Y>
-/user?birthdate=<m-d>
+GET /users?birthdate=<m-d-Y>
+GET /users?birthdate=<m-d>
 ```
-
-**Request Method:**  
-`GET`
 
 **Additional Parameters:**  
 `page=<page_num>`: For pagination. Specifies the page number to skip to. _Default: 1_
@@ -354,18 +368,15 @@ Get all users who have a birthday on a given day. If a year is not specified, th
 `200 OK`: Request succeeded. Full user documents will be returned in an array. A query with no results will return an empty array.
 
 **Example Curl:**  
-TODO
+`TODO`
 
 #### Users with Campaign Actions
 Get all users who have taken a campaign action.
 
 **Query:**  
 ```
-/users?exclude_no_campaigns=1
+GET /users?exclude_no_campaigns=1
 ```
-
-**Request Method:**  
-`GET`
 
 **Additional Parameters:**  
 `page=<page_num>`: For pagination. Specifies the page number to skip to. _Default: 1_
@@ -376,7 +387,7 @@ Get all users who have taken a campaign action.
 `200 OK`: Request succeeded. Full user documents will be returned in an array. A query with no results will return an empty array.
 
 **Example Curl:**  
-TODO
+`TODO`
 
 ## Other Status Codes
 `400 Bad Request`: Invalid usage of a resource.
@@ -399,7 +410,7 @@ TODO
     * Login / Logout
 * SMS
     * Querying & updating a user's campaign actions
-* Email
+* Email/Message Broker
     * Generating campaign digest emails
     * Generating anniversary emails
     * Generating birthday emails
