@@ -1,27 +1,40 @@
 # User API Spec
 
-The base URL path for all the endpoints that follow should be something along the lines of:
+The base URL path for all the endpoints. `1` indicates the version of the API:
 ```
-https://api.dosomething.org/v1
+https://api.dosomething.org/1/
 ```
+
+## Quick Reference
+URL | HTTP Verb | Functionality
+--- | --------- | -------------
+`/login`                                   | POST   | [Logging In](#logging-in)
+`/logout`                                  | POST   | [Logging Out](#logging-out)
+`/users`                                   | GET    | [Retrieving Users](#retrieving-users)
+`/users/create`                            | POST   | [Registering a User](#registering-a-user)
+`/users/<user_id>`                         | GET    | [Retrieving a User](#retrieving-a-user)
+`/users/<user_id>`                         | POST   | [Updating a User](#updating-a-user)
+`/users/<user_id>/campaigns`               | GET    | [Retrieving a User's Campaigns](#retrieving-users-campaigns)
+`/users/<user_id>/campaigns`               | POST   | [Updating Info for all of a User's Campaigns](#updating-users-campaigns)
+`/users/<user_id>/campaigns/<campaign_id>` | POST   | [Updating User Info for a Single Campaign](#updating-users-campaign)
 
 ## Authentication
-User creation:
-`POST /user/register` or can we/should we just use `POST /user`?
 
-User login/logouts. If we go with Drupal-like sessions, I imagine we'll need `POST /user/login` and `POST /user/logout`. But are there different and better ways to go here? OAuth2? Something else?
+<h3 id="logging-in">Logging In</h3>
+<h3 id="logging-out">Logging Out</h3>
+<h3 id="registering-a-user">Registering a User</h3>
 
 ## User Profile
 
-### User GET
+<h3 id="retrieving-a-user">Retrieving a User</h3>
 Get profile data for a specific user. This can be retrieved with either a Drupal UID, the database-generated ID, a mobile phone number, or an email address.
 
 **Endpoints:**  
 ```
-/user/<:drupal_uid>
-/user/<:doc_id>
-/user/<:mobile>
-/user/<:email>
+/users/<drupal_uid>
+/users/<doc_id>
+/users/<mobile>
+/users/<email>
 ```
 
 **Request Method:**  
@@ -60,12 +73,15 @@ TODO
 }
 ```
 
-### User POST
-Create and/or update a user resource.
+<h3 id="updating-a-user">Updating a User</h3>
+Update a user resource.
 
 **Endpoint:**  
 ```
-/user
+/users/<drupal_uid>
+/users/<doc_id>
+/users/<mobile>
+/users/<email>
 ```
 
 **Request Method:**  
@@ -169,15 +185,15 @@ For successful requests that create a document, a 201 status code will be return
 }
 ```
 
-### User Campaigns GET
+<h3 id="retrieving-usrs-campaigns">Retrieving a User's Campaigns</h3>
 Get the campaign actions of a specific user. This can be retrieved with either a Drupal UID, the document ID, a mobile phone number, or an email address.
 
 **Endpoints:**  
 ```
-/user/<:drupal_uid>/campaigns
-/user/<:doc_id>/campaigns
-/user/<:mobile>/campaigns
-/user/<:email>/campaigns
+/users/<drupal_uid>/campaigns
+/users/<doc_id>/campaigns
+/users/<mobile>/campaigns
+/users/<email>/campaigns
 ```
 
 **Request Method:**  
@@ -217,15 +233,15 @@ If campaign actions do exist, they'll be returned in an array:
 ]
 ```
 
-### User Campaigns POST
+<h3 id="updating-users-campaigns">Updating Info for all of a user's Campaign</h3>
 Update a user's campaign actions.
 
 **Endpoints:**  
 ```
-/user/<:drupal_uid>/campaigns
-/user/<:doc_id>/campaigns
-/user/<:mobile>/campaigns
-/user/<:email>/campaigns
+/users/<drupal_uid>/campaigns
+/users/<doc_id>/campaigns
+/users/<mobile>/campaigns
+/users/<email>/campaigns
 ```
 
 **Request Method:**  
@@ -267,10 +283,12 @@ TODO
 202 Accepted
 ```
 
+<h3 id="updating-users-campaign">Updating User Info for a Signle Campaign</h3>
+
 ## Bulk Querying
 For systems like the digest e-mail creation, we can offer ways to query for a group of users.
 
-### All Users
+<h3 id="retrieving-users">Retrieving Users</h3>
 Get all users. By default, results will be paginated only returning a subset of all users.
 
 **Endpoint:**  
@@ -282,9 +300,9 @@ Get all users. By default, results will be paginated only returning a subset of 
 `GET`
 
 **Additional Parameters:**  
-`page=<:page_num>`: For pagination. Specifies the page number to skip to. _Default: 1_
+`page=<page_num>`: For pagination. Specifies the page number to skip to. _Default: 1_
 
-`page_size=<:page_size>:` For pagination. Requires the `page` param to be set. Sets the page size. _Default: 100_
+`page_size=<page_size>`: For pagination. Requires the `page` param to be set. Sets the page size. _Default: 100_
 
 **Successful Responses:**  
 `200 OK`: Request succeeded. Full user documents will be returned in an array. A query with no results will return an empty array.
@@ -297,17 +315,17 @@ Get all users who have an anniversary with subscribing to DoSomething.org. If a 
 
 **Query:**  
 ```
-/users?anniversary_date=<:m-d-Y>
-/users?anniversary_date=<:m-d>
+/users?anniversary_date=<m-d-Y>
+/users?anniversary_date=<m-d>
 ```
 
 **Request Method:**  
 `GET`
 
 **Additional Parameters:**  
-`page=<:page_num>`: For pagination. Specifies the page number to skip to. _Default: 1_
+`page=<page_num>`: For pagination. Specifies the page number to skip to. _Default: 1_
 
-`page_size=<:page_size>:` For pagination. Requires the `page` param to be set. Sets the page size. _Default: 100_
+`page_size=<page_size>`: For pagination. Requires the `page` param to be set. Sets the page size. _Default: 100_
 
 **Successful Responses:**  
 `200 OK`: Request succeeded. Full user documents will be returned in an array. A query with no results will return an empty array.
@@ -320,17 +338,17 @@ Get all users who have a birthday on a given day. If a year is not specified, th
 
 **Query:**  
 ```
-/users?birthdate=<:m-d-Y>
-/user?birthdate=<:m-d>
+/users?birthdate=<m-d-Y>
+/user?birthdate=<m-d>
 ```
 
 **Request Method:**  
 `GET`
 
 **Additional Parameters:**  
-`page=<:page_num>`: For pagination. Specifies the page number to skip to. _Default: 1_
+`page=<page_num>`: For pagination. Specifies the page number to skip to. _Default: 1_
 
-`page_size=<:page_size>:` For pagination. Requires the `page` param to be set. Sets the page size. _Default: 100_
+`page_size=<page_size>`: For pagination. Requires the `page` param to be set. Sets the page size. _Default: 100_
 
 **Successful Responses:**  
 `200 OK`: Request succeeded. Full user documents will be returned in an array. A query with no results will return an empty array.
@@ -350,9 +368,9 @@ Get all users who have taken a campaign action.
 `GET`
 
 **Additional Parameters:**  
-`page=<:page_num>`: For pagination. Specifies the page number to skip to. _Default: 1_
+`page=<page_num>`: For pagination. Specifies the page number to skip to. _Default: 1_
 
-`page_size=<:page_size>:` For pagination. Requires the `page` param to be set. Sets the page size. _Default: 100_
+`page_size=<page_size>`: For pagination. Requires the `page` param to be set. Sets the page size. _Default: 100_
 
 **Successful Responses:**  
 `200 OK`: Request succeeded. Full user documents will be returned in an array. A query with no results will return an empty array.
