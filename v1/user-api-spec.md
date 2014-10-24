@@ -53,7 +53,7 @@ curl -X POST \
 ```
 
 **Example Response:**
-TBD: The response could also include the rest of the entirety of the user's document. See [Retrieving a User](#retrieving-a-user).
+TBD: The response could also include the rest of the entirety of the user's document. See [Retrieving a User](#retrieving-a-user) and [Updating a User(#updating-a-user) for the full list of parameters.
 ```
 200 OK
 Content-Type: application/json
@@ -175,6 +175,7 @@ curl -X GET \
 ```
 
 **Example Response:**  
+This only provides a small example of what a returned user document might look like. For the full list of possible parameters, see [Updating a User](#updating-a-user).
 ```
 200 OK
 Content-Type: application/json
