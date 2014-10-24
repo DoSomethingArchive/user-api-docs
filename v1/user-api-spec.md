@@ -26,10 +26,80 @@ URL | HTTP Verb | Functionality
 POST /login
 ```
 
+**Parameters:**
+In addition to the password, either mobile number or email is required.
+```
+Content-Type: application/json
+
+{
+    /* Required if 'mobile' is not provided */
+    email: String,
+
+    /* Required if 'email' is not provided */
+    mobile: String,
+
+    /* Required */
+    password: String
+}
+```
+
+**Example Curl:**
+```
+curl -X POST \
+  -H "X-DS-Application-Id: ${APPLICATION_ID}" \
+  -H "X-DS-REST-API-Key: ${REST_API_KEY}" \
+  -d '{login data}' \
+  http://api.dosomething.org/1/login
+```
+
+**Example Response:**
+TBD: The response could also include the rest of the entirety of the user's document. See [Retrieving a User](#retrieving-a-user).
+```
+200 OK
+Content-Type: application/json
+
+{
+  email: "cooldude6",
+  phone: "555-555-5555",
+  created_at: "2011-11-07T20:58:34.448Z",
+  updated_at: "2011-11-07T20:58:34.448Z",
+  doc_id: "g7y9tkhB7O",
+  session_token: "pnktnjyb996sj4p156gjtp4im"
+}
+```
+
 <h3 id="logging-out">Logging Out</h3>
 
 ```
 POST /logout
+```
+
+**Parameters:**
+Either mobile number or email is required.
+```
+Content-Type: application/json
+
+{
+    /* Required if 'mobile' is not provided */
+    email: String,
+
+    /* Required if 'email' is not provided */
+    mobile: String
+}
+```
+
+**Example Curl:**
+```
+curl -X POST \
+  -H "X-DS-Application-Id: ${APPLICATION_ID}" \
+  -H "X-DS-REST-API-Key: ${REST_API_KEY}" \
+  -d '{logout data}' \
+  http://api.dosomething.org/1/logout
+```
+
+**Example Response:**
+```
+200 OK
 ```
 
 <h3 id="registering-a-user">Registering a User</h3>
@@ -61,7 +131,13 @@ Content-Type: application/json
 ```
 
 **Example Curl:**  
-`TODO`
+```
+curl -X POST \
+  -H "X-DS-Application-Id: ${APPLICATION_ID}" \
+  -H "X-DS-REST-API-Key: ${REST_API_KEY}" \
+  -d '{create data}' \
+  http://api.dosomething.org/1/users/create
+```
 
 **Example Response:**
 Request fulfilled synchronously.
@@ -91,7 +167,12 @@ GET /users/<email>
 `404 Not Found`: The resource does not exist.
 
 **Example Curl:**  
-`TODO`
+```
+curl -X GET \
+  -H "X-DS-Application-Id: ${APPLICATION_ID}" \
+  -H "X-DS-REST-API-Key: ${REST_API_KEY}" \
+  http://api.dosomething.org/1/users/5555555555
+```
 
 **Example Response:**  
 ```
@@ -206,7 +287,13 @@ Content-Type: application/json
 `TODO`
 
 **Example Curl:**  
-`TODO`
+```
+curl -X POST \
+  -H "X-DS-Application-Id: ${APPLICATION_ID}" \
+  -H "X-DS-REST-API-Key: ${REST_API_KEY}" \
+  -d {update data} \
+  http://api.dosomething.org/1/users/5555555555
+```
 
 **Example Response:**  
 Request accepted to be processed asynchronously.
@@ -233,7 +320,12 @@ GET /users/<email>/campaigns
 `404 Not Found`: The resource does not exist.
 
 **Example Curl:**  
-`TODO`
+```
+curl -X GET \
+  -H "X-DS-Application-Id: ${APPLICATION_ID}" \
+  -H "X-DS-REST-API-Key: ${REST_API_KEY}" \
+  http://api.dosomething.org/1/users/5555555555/campaigns
+```
 
 **Example Response:**  
 An empty array is returned if no campaign actions have been taken yet:
@@ -299,7 +391,13 @@ Content-Type: application/json
 `404 Not Found`: The resource does not exist.
 
 **Example Curl:**  
-`TODO`
+```
+curl -X POST \
+  -H "X-DS-Application-Id: ${APPLICATION_ID}" \
+  -H "X-DS-REST-API-Key: ${REST_API_KEY}" \
+  -d {update data} \
+  http://api.dosomething.org/1/users/5555555555
+```
 
 **Example Response:**  
 Request accepted to be processed asynchronously.
@@ -328,7 +426,12 @@ GET /users
 `200 OK`: Request succeeded. Full user documents will be returned in an array. A query with no results will return an empty array.
 
 **Example Curl:**  
-`TODO`
+```
+curl -X GET \
+  -H "X-DS-Application-Id: ${APPLICATION_ID}" \
+  -H "X-DS-REST-API-Key: ${REST_API_KEY}" \
+  http://api.dosomething.org/1/users
+```
 
 #### Users by Anniversary Date
 Get all users who have an anniversary with subscribing to DoSomething.org. If a year is not specified, then it will return all users who have an anniversary on that day across all years.
