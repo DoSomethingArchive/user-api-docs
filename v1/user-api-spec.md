@@ -31,14 +31,14 @@ In addition to the password, either mobile number or email is required.
 Content-Type: application/json
 
 {
-    /* Required if 'mobile' is not provided */
-    email: String,
+  /* Required if 'mobile' is not provided */
+  email: String,
 
-    /* Required if 'email' is not provided */
-    mobile: String,
+  /* Required if 'email' is not provided */
+  mobile: String,
 
-    /* Required */
-    password: String
+  /* Required */
+  password: String
 }
 ```
 
@@ -79,11 +79,11 @@ Either mobile number or email is required.
 Content-Type: application/json
 
 {
-    /* Required if 'mobile' is not provided */
-    email: String,
+  /* Required if 'mobile' is not provided */
+  email: String,
 
-    /* Required if 'email' is not provided */
-    mobile: String
+  /* Required if 'email' is not provided */
+  mobile: String
 }
 ```
 
@@ -114,18 +114,18 @@ In addition to the password, either a mobile number or email is required.
 Content-Type: application/json
 
 {
-    /* Required if 'mobile' is not provided */
-    email: String,
+  /* Required if 'mobile' is not provided */
+  email: String,
 
-    /* Required if 'email' is not provided */
-    mobile: String,
+  /* Required if 'email' is not provided */
+  mobile: String,
 
-    /* Required */
-    password: String,
+  /* Required */
+  password: String,
 
-    /* Optional */
-    birthdate: Date,
-    first_name: String
+  /* Optional */
+  birthdate: Date,
+  first_name: String
 }
 ```
 
@@ -145,8 +145,8 @@ Request fulfilled synchronously.
 Content-Type: application/json
 
 {
-    created_at: 2000-01-01T00:00:00Z,
-    doc_id: some sort of hash value
+  created_at: 2000-01-01T00:00:00Z,
+  doc_id: some sort of hash value
 }
 ```
 
@@ -180,22 +180,22 @@ This only provides a small example of what a returned user document might look l
 Content-Type: application/json
 
 {
-    email: "test@dosomething.org",
-    first_name: First,
-    last_name: Last,
-    drupal_uid: 123456,
-    doc_id: some sort of hash value,
-    campaigns: [
-        {
-            nid: 123,
-            report_back: "2014-04-10T00:00:00Z",
-            sign_up: "2014-04-08T00:00:00Z"
-        },
-        {
-            nid: 456,
-            sign_up: "2014-05-01T00:00:00Z"
-        }
-    ]
+  email: "test@dosomething.org",
+  first_name: First,
+  last_name: Last,
+  drupal_uid: 123456,
+  doc_id: some sort of hash value,
+  campaigns: [
+    {
+      nid: 123,
+      report_back: "2014-04-10T00:00:00Z",
+      sign_up: "2014-04-08T00:00:00Z"
+    },
+    {
+      nid: 456,
+      sign_up: "2014-05-01T00:00:00Z"
+    }
+  ]
 }
 ```
 
@@ -215,71 +215,71 @@ To update a user resource, a mobile number, email address, Drupal UID, or docume
 Content-Type: application/json
 
 {
-    /* Email address - forced to lowercase */
-    email: String,
+  /* Email address - forced to lowercase */
+  email: String,
 
-    /* Mobile phone number */
-    mobile: String,
+  /* Mobile phone number */
+  mobile: String,
 
-    /* Drupal UID */
-    drupal_uid: Number,
+  /* Drupal UID */
+  drupal_uid: Number,
 
-    /* Database-generated ID */
-    doc_id: String,
+  /* Database-generated ID */
+  doc_id: String,
 
-    /* Mailing address */
-    addr_street1: String,
-    addr_street2: String,
-    addr_city: String,
-    addr_state: String,
-    addr_zip: String,
+  /* Mailing address */
+  addr_street1: String,
+  addr_street2: String,
+  addr_city: String,
+  addr_state: String,
+  addr_zip: String,
 
-    /* Date of birth */
-    birthdate: Date,
+  /* Date of birth */
+  birthdate: Date,
 
-    /* Date when Drupal account was created */
-    drupal_register_date: Date
+  /* Date when Drupal account was created */
+  drupal_register_date: Date
 
-    /* Email subscription status. ex: subscribed, unsbuscribed, etc. */
-    email_status: Number,
+  /* Email subscription status. ex: subscribed, unsbuscribed, etc. */
+  email_status: Number,
 
-    /* First name */
-    first_name: String,
+  /* First name */
+  first_name: String,
 
-    /* Last name */
-    last_name: String,
+  /* Last name */
+  last_name: String,
 
-    /* SMS subscription status */
-    mobile_status: Number,
+  /* SMS subscription status */
+  mobile_status: Number,
+  
+  /* User roles - for determining access rights. Copying from Drupal user DB for now. */
+  roles: [
+    1, /* authenticated user */
+    3, /* administrator */
+    4, /* editor */
+    6, /* communications team */
+    7, /* member support */
     
-    /* User roles - for determining access rights. Copying from Drupal user DB for now. */
-    roles: [
-        1, /* authenticated user */
-        3, /* administrator */
-        4, /* editor */
-        6, /* communications team */
-        7, /* member support */
-        
-        /* POTENTIAL FUTURE ROLES */
-        8, /* 3rd party developer - particularly for hackathons and such */
-    ],
+    /* POTENTIAL FUTURE ROLES */
+    8, /* 3rd party developer - particularly for hackathons and such */
+  ],
 
-    /* GreatSchools ID of the user's school */
-    school_gsid: Number,
+  /* GreatSchools ID of the user's school */
+  school_gsid: Number,
 
-    /* Name of the user's school */
-    school_name: String,
+  /* Name of the user's school */
+  school_name: String,
 
-    /* List of campaign actions */
-    campaigns: Object Array
-        [
-            {
-                nid: Number,
-                sign_up: Date,
-                report_back: Date
-            },
-            ...
-        ]
+  /* List of campaign actions */
+  campaigns: Object Array
+    [
+      {
+        nid: Number,
+        sign_up: Date,
+        report_back: Date
+      },
+      ...
+    ]
 }
 ```
 
@@ -302,7 +302,7 @@ Request accepted to be processed asynchronously.
 Content-Type: application/json
 
 {
-    updated_at: 2000-01-01T00:00:00Z
+  updated_at: 2000-01-01T00:00:00Z
 }
 ```
 
@@ -349,8 +349,8 @@ Request fulfilled synchronously.
 Content-Type: application/json
 
 {
-    updated_at: 2000-01-01T00:00:00Z,
-    doc_id: some sort of hash value
+  updated_at: 2000-01-01T00:00:00Z,
+  doc_id: some sort of hash value
 }
 ```
 
@@ -390,15 +390,15 @@ If campaign actions do exist, they'll be returned in an array:
 Content-Type: application/json
 
 [
-    {
-        nid: 123,
-        report_back: "2014-04-10T00:00:00Z",
-        sign_up: "2014-04-08T00:00:00Z"
-    },
-    {
-        nid: 456,
-        sign_up: "2014-05-01T00:00:00Z"
-    }
+  {
+    nid: 123,
+    report_back: "2014-04-10T00:00:00Z",
+    sign_up: "2014-04-08T00:00:00Z"
+  },
+  {
+    nid: 456,
+    sign_up: "2014-05-01T00:00:00Z"
+  }
 ]
 ```
 
@@ -555,16 +555,16 @@ GET /users?exclude_no_campaigns=1
 
 ## Dependent Products
 * Android
-    * Querying & updating a user's campaign actions
-    * User Profile
-    * Registration
-    * Login / Logout
+  * Querying & updating a user's campaign actions
+  * User Profile
+  * Registration
+  * Login / Logout
 * SMS
-    * Querying & updating a user's campaign actions
+  * Querying & updating a user's campaign actions
 * Email/Message Broker
-    * Generating campaign digest emails
-    * Generating anniversary emails
-    * Generating birthday emails
+  * Generating campaign digest emails
+  * Generating anniversary emails
+  * Generating birthday emails
 * Web
-    * Querying & updating a user's campaign actions
-    * User profile
+  * Querying & updating a user's campaign actions
+  * User profile
