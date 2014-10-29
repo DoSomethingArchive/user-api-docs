@@ -458,7 +458,7 @@ URL | HTTP Verb | Functionality
 `/users?birthdate`            | GET | [Retrieve by Birthdate](#retrieve-by-birthdate)
 `/users?exclude_no_campaigns` | GET | [Retrieve if Signed Up for any Campaign](#retrieve-by-campaign-action)
 
-<h4 id="retrieving-users">Retrieving Users</h3>
+<h4 id="retrieving-users">Retrieving Users</h4>
 Get all users. By default, results will be paginated only returning a subset of all users.
 
 ```
