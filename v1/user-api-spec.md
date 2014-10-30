@@ -74,25 +74,14 @@ POST /logout
 ```
 
 **Parameters:**
-Either mobile number or email is required.
-```
-Content-Type: application/json
-
-{
-  /* Required if 'mobile' is not provided */
-  email: String,
-
-  /* Required if 'email' is not provided */
-  mobile: String
-}
-```
+The session token to log out of needs to be provided in the header.
 
 **Example Curl:**
 ```
 curl -X POST \
   -H "X-DS-Application-Id: ${APPLICATION_ID}" \
   -H "X-DS-REST-API-Key: ${REST_API_KEY}" \
-  -d '{logout data}' \
+  -H "Session: ${SESSION_TOKEN}"
   http://api.dosomething.org/1/logout
 ```
 
@@ -107,6 +96,8 @@ Create a new user.
 ```
 POST /users
 ```
+
+**Open Questions:** Is there a way we can register a new user from a particular application without requiring a password?
 
 **Parameters:**  
 In addition to the password, either a mobile number or email is required.
@@ -188,12 +179,12 @@ Content-Type: application/json
   campaigns: [
     {
       nid: 123,
-      report_back: "2014-04-10T00:00:00Z",
-      sign_up: "2014-04-08T00:00:00Z"
+      rbid: 100,
+      sid: 100
     },
     {
       nid: 456,
-      sign_up: "2014-05-01T00:00:00Z"
+      sid: 101
     }
   ]
 }
@@ -234,14 +225,11 @@ Content-Type: application/json
   addr_state: String,
   addr_zip: String,
 
+  /* Country */
+  country: String,
+
   /* Date of birth */
   birthdate: Date,
-
-  /* Date when Drupal account was created */
-  drupal_register_date: Date
-
-  /* Email subscription status. ex: subscribed, unsbuscribed, etc. */
-  email_status: Number,
 
   /* First name */
   first_name: String,
@@ -249,34 +237,22 @@ Content-Type: application/json
   /* Last name */
   last_name: String,
 
-  /* SMS subscription status */
-  mobile_status: Number,
-  
-  /* User roles - for determining access rights. Copying from Drupal user DB for now. */
-  roles: [
-    1, /* authenticated user */
-    3, /* administrator */
-    4, /* editor */
-    6, /* communications team */
-    7, /* member support */
-    
-    /* POTENTIAL FUTURE ROLES */
-    8, /* 3rd party developer - particularly for hackathons and such */
-  ],
-
-  /* GreatSchools ID of the user's school */
-  school_gsid: Number,
-
-  /* Name of the user's school */
-  school_name: String,
+  /* Timestamps when document was created and last updated */
+  created_at: Date,
+  updated_at: Date,
 
   /* List of campaign actions */
   campaigns: Object Array
     [
       {
+        /* Campaign node ID */
         nid: Number,
-        sign_up: Date,
-        report_back: Date
+
+        /* Report back ID */
+        rbid: Number,
+
+        /* Sign up ID */
+        sid: Number
       },
       ...
     ]
@@ -325,11 +301,11 @@ Content-Type: application/json
   /* Required. Campaign node ID */
   nid: Number,
 
-  /* Campaign report back date */
-  report_back: Date,
+  /* Report back ID */
+  rbid: Date,
 
-  /* Campaign sign update date */
-  sign_up: Date
+  /* Sign up ID */
+  sid: Date
 }
 ```
 
@@ -392,12 +368,12 @@ Content-Type: application/json
 [
   {
     nid: 123,
-    report_back: "2014-04-10T00:00:00Z",
-    sign_up: "2014-04-08T00:00:00Z"
+    rbid: 100,
+    sid: 100
   },
   {
     nid: 456,
-    sign_up: "2014-05-01T00:00:00Z"
+    sid: 101
   }
 ]
 ```
