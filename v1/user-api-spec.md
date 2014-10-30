@@ -430,14 +430,13 @@ Accept: application/json
 
 ## Dependent Products
 #### v1
-* Android
-  * Querying & updating a user's campaign actions
-  * User Profile
-  * Registration
-  * Login / Logout
-* [CGG Voting App](https://github.com/DoSomething/voting-app)
+* Android/iOS
   * User registration
-  * User updates
+  * User authentication
+  * Submitting campaign sign up and report back actions
+  * Displaying and editing user profile
+* [CGG Voting App](https://github.com/DoSomething/voting-app)
+  * User auto-registration
 
 #### v2
 * Email/Message Broker
