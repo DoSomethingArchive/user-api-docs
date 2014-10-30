@@ -13,9 +13,10 @@ URL | HTTP Verb | Functionality
 `/users`                          | POST  | [Registering a User](#registering-a-user)
 `/users`                          | GET   | [Retrieving a User](#retrieving-a-user)
 `/users`                          | PUT   | [Updating a User](#updating-a-user)
-`/users/campaigns`                | POST  | [Adding Campaign Info to a User](#adding-campaign-to-user)
 `/users/campaigns`                | GET   | [Retrieving a User's Campaigns](#retrieving-users-campaigns)
-`/users/campaigns/<campaign_id>`  | PUT   | [Updating User Info for a Single Campaign](#updating-users-campaign)
+`/campaigns/signup`               | POST  | [Submitting a Campaign Sign Up](#submitting-sign-up)
+`/campaigns/reportback`           | POST  | [Submitting a Campaign Report Back](#submitting-report-back)
+
 
 ## Authentication
 
@@ -55,7 +56,7 @@ curl -X POST \
 TBD: The response could also include the rest of the entirety of the user's document. See [Retrieving a User](#retrieving-a-user) and [Updating a User(#updating-a-user) for the full list of parameters.
 ```
 200 OK
-Content-Type: application/json
+Accept: application/json
 
 {
   email: "cooldude6",
@@ -97,7 +98,7 @@ Create a new user.
 POST /users
 ```
 
-**Open Questions:** Is there a way we can register a new user from a particular application without requiring a password?
+**Open Question:** Is there a way we can register a new user from a particular application without requiring a password?
 
 **Parameters:**  
 In addition to the password, either a mobile number or email is required.
@@ -133,7 +134,7 @@ curl -X POST \
 Request fulfilled synchronously.
 ```
 201 Created
-Content-Type: application/json
+Accept: application/json
 
 {
   created_at: 2000-01-01T00:00:00Z,
@@ -168,7 +169,7 @@ curl -X GET \
 This only provides a small example of what a returned user document might look like. For the full list of possible parameters, see [Updating a User](#updating-a-user).
 ```
 200 OK
-Content-Type: application/json
+Accept: application/json
 
 {
   email: "test@dosomething.org",
@@ -275,58 +276,10 @@ curl -X POST \
 Request accepted to be processed asynchronously.
 ```
 202 Accepted
-Content-Type: application/json
+Accept: application/json
 
 {
   updated_at: 2000-01-01T00:00:00Z
-}
-```
-
-<h4 id="adding-campaign-to-user">Adding Campaign Info to a User</h4>
-Add campaign info to a user.
-
-```
-POST /users/campaigns?drupal_uid=<drupal_uid>
-POST /users/campaigns?doc_id=<doc_id>
-POST /users/campaigns?mobile=<mobile>
-POST /users/campaigns?email=<email>
-```
-
-**Parameters:**  
-The campaign `nid` is required, and one or both of `report_back` and `sign_up` dates need to be provided.
-```
-Content-Type: application/json
-
-{
-  /* Required. Campaign node ID */
-  nid: Number,
-
-  /* Report back ID */
-  rbid: Date,
-
-  /* Sign up ID */
-  sid: Date
-}
-```
-
-**Example Curl:**  
-```
-curl -X POST \
-  -H "X-DS-Application-Id: ${APPLICATION_ID}" \
-  -H "X-DS-REST-API-Key: ${REST_API_KEY}" \
-  -d '{campaign data}' \
-  http://api.dosomething.org/1/users/campaigns?mobile=5555555555
-```
-
-**Example Response:**
-Request fulfilled synchronously.
-```
-201 Created
-Content-Type: application/json
-
-{
-  updated_at: 2000-01-01T00:00:00Z,
-  doc_id: some sort of hash value
 }
 ```
 
@@ -355,7 +308,7 @@ curl -X GET \
 An empty array is returned if no campaign actions have been taken yet:
 ```
 200 OK
-Content-Type: application/json
+Accept: application/json
 
 []
 ```
@@ -378,51 +331,100 @@ Content-Type: application/json
 ]
 ```
 
-<h3 id="updating-users-campaign">Updating User Info for a Single Campaign</h3>
-Updates the info for a single campaign for a signle user.
+
+<h3 id="submitting-sign-up">Submitting a Campaign Sign Up</h3>
+Submit a campaign sign up for the logged in user.
 
 ```
-PUT /users/campaigns?drupal_uid=<drupal_uid>&campaign_id=<campaign_id>
-PUT /users/campaigns?doc_id=<doc_id>&campaign_id=<campaign_id>
-PUT /users/campaigns?mobile=<mobile>&campaign_id=<campaign_id>
-PUT /users/campaigns?email=<email>&campaign_id=<campaign_id>
+POST /campaigns/signup
 ```
 
-**Parameters:**  
+**Parameters:**
+
 ```
 Content-Type: application/json
 
 {
-  {
-    /* Campaign node ID */
-    nid: Number,
-
-    /* Date the user signed up for the campaign */
-    sign_up: Date,
-
-    /* Date the user last submitted/updated a report back for the campaign */
-    report_back: Date
-  }
+  /* Campaign node ID */
+  nid: Number
 }
 ```
 
-**Error Responses:**  
-`404 Not Found`: The resource does not exist.
+**Example Curl:**
 
-**Example Curl:**  
 ```
 curl -X POST \
   -H "X-DS-Application-Id: ${APPLICATION_ID}" \
   -H "X-DS-REST-API-Key: ${REST_API_KEY}" \
-  -d {update data} \
-  http://api.dosomething.org/1/users/5555555555
+  -H "Session: ${SESSION_TOKEN}" \
+  -d '{sign up data}' \
+  http://api.dosomething.org/1/campaigns/signup
 ```
 
-**Example Response:**  
-Request accepted to be processed asynchronously.
+**Example Response:**
+
 ```
-202 Accepted
+201 Created
+Accept: application/json
+
+{
+  created_at: 2000-01-01T00:00:00Z,
+  sid: 100
+}
 ```
+
+
+<h3 id="submitting-report-back">Submitting a Campaign Report Back</h3>
+Submit and update a campaign report back for the logged in user.
+```
+POST /campaigns/reportback
+```
+
+**Open Question:** Do we support multipart POSTing of an image file?
+
+**Parameters:**
+
+```
+Content-Type: application/json
+
+{
+  /* Campaign node ID */
+  nid: Number,
+
+  /* The number of things done */
+  quantity: Number
+
+  /* The reason why the user participated */
+  why_participated: String,
+
+  /* An image URL of the action being taken */
+  file_url: String
+}
+```
+
+**Example Curl:**
+
+```
+curl -X POST \
+  -H "X-DS-Application-Id: ${APPLICATION_ID}" \
+  -H "X-DS-REST-API-Key: ${REST_API_KEY}" \
+  -H "Session: ${SESSION_TOKEN}" \
+  -d '{report back data}' \
+  http://api.dosomething.org/1/campaigns/reportback
+```
+
+**Example Response:**
+
+```
+201 Created
+Accept: application/json
+
+{
+  created_at: 2000-01-01T00:00:00Z,
+  rbid: 100
+}
+```
+
 
 ---
 
