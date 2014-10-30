@@ -448,30 +448,105 @@ Request accepted to be processed asynchronously.
 202 Accepted
 ```
 
----
+## Bulk Querying
+We can offer ways to query for a group of users. This is currently driven largely by the needs of our digest e-mail creation system.
 
-## Dependent Products
-#### v1
-* Android
-  * Querying & updating a user's campaign actions
-  * User Profile
-  * Registration
-  * Login / Logout
-* [CGG Voting App](https://github.com/DoSomething/voting-app)
-  * User registration
-  * User updates
+URL | HTTP Verb | Functionality
+--- | --------- | -------------
+`/users`                      | GET | [Retrieving Users](#retrieving-users)
+`/users?anniversary_date`     | GET | [Retrieve by Anniversary Date](#retrieve-by-anniversary-date)
+`/users?birthdate`            | GET | [Retrieve by Birthdate](#retrieve-by-birthdate)
+`/users?exclude_no_campaigns` | GET | [Retrieve if Signed Up for any Campaign](#retrieve-by-campaign-action)
 
-#### v2
-* Email/Message Broker
-  * Generating campaign digest emails
-  * Generating anniversary emails
-  * Generating birthday emails
+<h4 id="retrieving-users">Retrieving Users</h4>
+Get all users. By default, results will be paginated only returning a subset of all users.
 
-#### Future
-* SMS
-  * Querying & updating a user's campaign actions
-* Web
-  * Querying & updating a user's campaign actions
-  * User profile
-* Data
-  * Querying all user information
+```
+GET /users
+```
+
+**Additional Parameters:**  
+`page=<page_num>`: For pagination. Specifies the page number to skip to. _Default: 1_
+
+`page_size=<page_size>`: For pagination. Requires the `page` param to be set. Sets the page size. _Default: 100_
+
+**Successful Responses:**  
+`200 OK`: Request succeeded. Full user documents will be returned in an array. A query with no results will return an empty array.
+
+**Example Curl:**  
+```
+curl -X GET \
+  -H "X-DS-Application-Id: ${APPLICATION_ID}" \
+  -H "X-DS-REST-API-Key: ${REST_API_KEY}" \
+  http://api.dosomething.org/1/users
+```
+
+<h4 id="retrieve-by-anniversary-date">Users by Anniversary Date</h4>
+Get all users who have an anniversary with subscribing to DoSomething.org. If a year is not specified, then it will return all users who have an anniversary on that day across all years.
+
+**Query:**  
+```
+GET /users?anniversary_date=<m-d-Y>
+GET /users?anniversary_date=<m-d>
+```
+
+**Additional Parameters:**  
+`page=<page_num>`: For pagination. Specifies the page number to skip to. _Default: 1_
+
+`page_size=<page_size>`: For pagination. Requires the `page` param to be set. Sets the page size. _Default: 100_
+
+**Successful Responses:**  
+`200 OK`: Request succeeded. Full user documents will be returned in an array. A query with no results will return an empty array.
+
+**Example Curl:**  
+`TODO`
+
+<h4 id="retrieve-by-birthdate">Users by Birthdate</h4>
+Get all users who have a birthday on a given day. If a year is not specified, then it will return all users who have a birthday on that day across all years.
+
+**Query:**  
+```
+GET /users?birthdate=<m-d-Y>
+GET /users?birthdate=<m-d>
+```
+
+**Additional Parameters:**  
+`page=<page_num>`: For pagination. Specifies the page number to skip to. _Default: 1_
+
+`page_size=<page_size>`: For pagination. Requires the `page` param to be set. Sets the page size. _Default: 100_
+
+**Successful Responses:**  
+`200 OK`: Request succeeded. Full user documents will be returned in an array. A query with no results will return an empty array.
+
+**Example Curl:**  
+`TODO`
+
+<h4 id="retrieve-by-campaign-action">Users with Campaign Actions</h4>
+Get all users who have taken a campaign action.
+
+**Query:**  
+```
+GET /users?exclude_no_campaigns=1
+```
+
+**Additional Parameters:**  
+`page=<page_num>`: For pagination. Specifies the page number to skip to. _Default: 1_
+
+`page_size=<page_size>`: For pagination. Requires the `page` param to be set. Sets the page size. _Default: 100_
+
+**Successful Responses:**  
+`200 OK`: Request succeeded. Full user documents will be returned in an array. A query with no results will return an empty array.
+
+**Example Curl:**  
+`TODO`
+
+## Other Status Codes
+`400 Bad Request`: Invalid usage of a resource.
+
+`401 Unauthorized`: Request is not authenticated. API token is missing or invalid.
+
+`403 Forbidden`: The request is not authorized. Credentials do not provide access to the resource.
+
+`406 Not Acceptable`: The requested resource is only capable of generating content not acceptable according to the Accept headers sent in the request. Currently only planning on supporting application/json.
+
+`422 Unprocessable Entity`: Invalid parameters provided in a request.
