@@ -14,8 +14,8 @@ URL | HTTP Verb | Functionality
 `/users`                          | GET   | [Retrieving a User](#retrieving-a-user)
 `/users`                          | PUT   | [Updating a User](#updating-a-user)
 `/users/campaigns`                | GET   | [Retrieving a User's Campaigns](#retrieving-users-campaigns)
-`/campaigns/signup`               | POST  | [Submitting a Campaign Sign Up](#submitting-sign-up)
-`/campaigns/reportback`           | POST  | [Submitting a Campaign Report Back](#submitting-report-back)
+`/campaigns/:nid/signup`          | POST  | [Submitting a Campaign Sign Up](#submitting-sign-up)
+`/campaigns/:nid/reportback`      | POST  | [Submitting a Campaign Report Back](#submitting-report-back)
 
 
 ## Authentication
@@ -336,18 +336,7 @@ Content-Type: application/json
 Submit a campaign sign up for the logged in user.
 
 ```
-POST /campaigns/signup
-```
-
-**Parameters:**
-
-```
-Content-Type: application/json
-
-{
-  /* Campaign node ID */
-  nid: Number
-}
+POST /campaigns/:nid/signup
 ```
 
 **Example Curl:**
@@ -358,7 +347,7 @@ curl -X POST \
   -H "X-DS-REST-API-Key: ${REST_API_KEY}" \
   -H "Session: ${SESSION_TOKEN}" \
   -d '{sign up data}' \
-  http://api.dosomething.org/1/campaigns/signup
+  http://api.dosomething.org/1/campaigns/123/signup
 ```
 
 **Example Response:**
@@ -377,7 +366,7 @@ Accept: application/json
 <h3 id="submitting-report-back">Submitting a Campaign Report Back</h3>
 Submit and update a campaign report back for the logged in user.
 ```
-POST /campaigns/reportback
+POST /campaigns/:nid/reportback
 ```
 
 **Open Question:** Do we support multipart POSTing of an image file?
@@ -388,9 +377,6 @@ POST /campaigns/reportback
 Content-Type: application/json
 
 {
-  /* Campaign node ID */
-  nid: Number,
-
   /* The number of things done */
   quantity: Number
 
@@ -410,7 +396,7 @@ curl -X POST \
   -H "X-DS-REST-API-Key: ${REST_API_KEY}" \
   -H "Session: ${SESSION_TOKEN}" \
   -d '{report back data}' \
-  http://api.dosomething.org/1/campaigns/reportback
+  http://api.dosomething.org/1/campaigns/123/reportback
 ```
 
 **Example Response:**
