@@ -13,9 +13,10 @@ URL | HTTP Verb | Functionality
 `/users`                          | POST  | [Registering a User](#registering-a-user)
 `/users`                          | GET   | [Retrieving a User](#retrieving-a-user)
 `/users`                          | PUT   | [Updating a User](#updating-a-user)
-`/users/campaigns`                | POST  | [Adding Campaign Info to a User](#adding-campaign-to-user)
 `/users/campaigns`                | GET   | [Retrieving a User's Campaigns](#retrieving-users-campaigns)
-`/users/campaigns/<campaign_id>`  | PUT   | [Updating User Info for a Single Campaign](#updating-users-campaign)
+`/campaigns/:nid/signup`          | POST  | [Submitting a Campaign Sign Up](#submitting-sign-up)
+`/campaigns/:nid/reportback`      | POST  | [Submitting a Campaign Report Back](#submitting-report-back)
+
 
 ## Authentication
 
@@ -55,7 +56,7 @@ curl -X POST \
 TBD: The response could also include the rest of the entirety of the user's document. See [Retrieving a User](#retrieving-a-user) and [Updating a User(#updating-a-user) for the full list of parameters.
 ```
 200 OK
-Content-Type: application/json
+Accept: application/json
 
 {
   email: "cooldude6",
@@ -74,25 +75,14 @@ POST /logout
 ```
 
 **Parameters:**
-Either mobile number or email is required.
-```
-Content-Type: application/json
-
-{
-  /* Required if 'mobile' is not provided */
-  email: String,
-
-  /* Required if 'email' is not provided */
-  mobile: String
-}
-```
+The session token to log out of needs to be provided in the header.
 
 **Example Curl:**
 ```
 curl -X POST \
   -H "X-DS-Application-Id: ${APPLICATION_ID}" \
   -H "X-DS-REST-API-Key: ${REST_API_KEY}" \
-  -d '{logout data}' \
+  -H "Session: ${SESSION_TOKEN}"
   http://api.dosomething.org/1/logout
 ```
 
@@ -107,6 +97,8 @@ Create a new user.
 ```
 POST /users
 ```
+
+**Open Question:** Is there a way we can register a new user from a particular application without requiring a password?
 
 **Parameters:**  
 In addition to the password, either a mobile number or email is required.
@@ -142,7 +134,7 @@ curl -X POST \
 Request fulfilled synchronously.
 ```
 201 Created
-Content-Type: application/json
+Accept: application/json
 
 {
   created_at: 2000-01-01T00:00:00Z,
@@ -177,7 +169,7 @@ curl -X GET \
 This only provides a small example of what a returned user document might look like. For the full list of possible parameters, see [Updating a User](#updating-a-user).
 ```
 200 OK
-Content-Type: application/json
+Accept: application/json
 
 {
   email: "test@dosomething.org",
@@ -188,12 +180,12 @@ Content-Type: application/json
   campaigns: [
     {
       nid: 123,
-      report_back: "2014-04-10T00:00:00Z",
-      sign_up: "2014-04-08T00:00:00Z"
+      rbid: 100,
+      sid: 100
     },
     {
       nid: 456,
-      sign_up: "2014-05-01T00:00:00Z"
+      sid: 101
     }
   ]
 }
@@ -234,14 +226,11 @@ Content-Type: application/json
   addr_state: String,
   addr_zip: String,
 
+  /* Country */
+  country: String,
+
   /* Date of birth */
   birthdate: Date,
-
-  /* Date when Drupal account was created */
-  drupal_register_date: Date
-
-  /* Email subscription status. ex: subscribed, unsbuscribed, etc. */
-  email_status: Number,
 
   /* First name */
   first_name: String,
@@ -249,34 +238,22 @@ Content-Type: application/json
   /* Last name */
   last_name: String,
 
-  /* SMS subscription status */
-  mobile_status: Number,
-  
-  /* User roles - for determining access rights. Copying from Drupal user DB for now. */
-  roles: [
-    1, /* authenticated user */
-    3, /* administrator */
-    4, /* editor */
-    6, /* communications team */
-    7, /* member support */
-    
-    /* POTENTIAL FUTURE ROLES */
-    8, /* 3rd party developer - particularly for hackathons and such */
-  ],
-
-  /* GreatSchools ID of the user's school */
-  school_gsid: Number,
-
-  /* Name of the user's school */
-  school_name: String,
+  /* Timestamps when document was created and last updated */
+  created_at: Date,
+  updated_at: Date,
 
   /* List of campaign actions */
   campaigns: Object Array
     [
       {
+        /* Campaign node ID */
         nid: Number,
-        sign_up: Date,
-        report_back: Date
+
+        /* Report back ID */
+        rbid: Number,
+
+        /* Sign up ID */
+        sid: Number
       },
       ...
     ]
@@ -299,58 +276,10 @@ curl -X POST \
 Request accepted to be processed asynchronously.
 ```
 202 Accepted
-Content-Type: application/json
+Accept: application/json
 
 {
   updated_at: 2000-01-01T00:00:00Z
-}
-```
-
-<h4 id="adding-campaign-to-user">Adding Campaign Info to a User</h4>
-Add campaign info to a user.
-
-```
-POST /users/campaigns?drupal_uid=<drupal_uid>
-POST /users/campaigns?doc_id=<doc_id>
-POST /users/campaigns?mobile=<mobile>
-POST /users/campaigns?email=<email>
-```
-
-**Parameters:**  
-The campaign `nid` is required, and one or both of `report_back` and `sign_up` dates need to be provided.
-```
-Content-Type: application/json
-
-{
-  /* Required. Campaign node ID */
-  nid: Number,
-
-  /* Campaign report back date */
-  report_back: Date,
-
-  /* Campaign sign update date */
-  sign_up: Date
-}
-```
-
-**Example Curl:**  
-```
-curl -X POST \
-  -H "X-DS-Application-Id: ${APPLICATION_ID}" \
-  -H "X-DS-REST-API-Key: ${REST_API_KEY}" \
-  -d '{campaign data}' \
-  http://api.dosomething.org/1/users/campaigns?mobile=5555555555
-```
-
-**Example Response:**
-Request fulfilled synchronously.
-```
-201 Created
-Content-Type: application/json
-
-{
-  updated_at: 2000-01-01T00:00:00Z,
-  doc_id: some sort of hash value
 }
 ```
 
@@ -379,7 +308,7 @@ curl -X GET \
 An empty array is returned if no campaign actions have been taken yet:
 ```
 200 OK
-Content-Type: application/json
+Accept: application/json
 
 []
 ```
@@ -392,179 +321,120 @@ Content-Type: application/json
 [
   {
     nid: 123,
-    report_back: "2014-04-10T00:00:00Z",
-    sign_up: "2014-04-08T00:00:00Z"
+    rbid: 100,
+    sid: 100
   },
   {
     nid: 456,
-    sign_up: "2014-05-01T00:00:00Z"
+    sid: 101
   }
 ]
 ```
 
-<h3 id="updating-users-campaign">Updating User Info for a Single Campaign</h3>
-Updates the info for a single campaign for a signle user.
+
+<h3 id="submitting-sign-up">Submitting a Campaign Sign Up</h3>
+Submit a campaign sign up for the logged in user.
 
 ```
-PUT /users/campaigns?drupal_uid=<drupal_uid>&campaign_id=<campaign_id>
-PUT /users/campaigns?doc_id=<doc_id>&campaign_id=<campaign_id>
-PUT /users/campaigns?mobile=<mobile>&campaign_id=<campaign_id>
-PUT /users/campaigns?email=<email>&campaign_id=<campaign_id>
+POST /campaigns/:nid/signup
 ```
 
-**Parameters:**  
-```
-Content-Type: application/json
+**Example Curl:**
 
-{
-  {
-    /* Campaign node ID */
-    nid: Number,
-
-    /* Date the user signed up for the campaign */
-    sign_up: Date,
-
-    /* Date the user last submitted/updated a report back for the campaign */
-    report_back: Date
-  }
-}
-```
-
-**Error Responses:**  
-`404 Not Found`: The resource does not exist.
-
-**Example Curl:**  
 ```
 curl -X POST \
   -H "X-DS-Application-Id: ${APPLICATION_ID}" \
   -H "X-DS-REST-API-Key: ${REST_API_KEY}" \
-  -d {update data} \
-  http://api.dosomething.org/1/users/5555555555
+  -H "Session: ${SESSION_TOKEN}" \
+  -d '{sign up data}' \
+  http://api.dosomething.org/1/campaigns/123/signup
 ```
 
-**Example Response:**  
-Request accepted to be processed asynchronously.
-```
-202 Accepted
-```
-
-## Bulk Querying
-We can offer ways to query for a group of users. This is currently driven largely by the needs of our digest e-mail creation system.
-
-URL | HTTP Verb | Functionality
---- | --------- | -------------
-`/users`                      | GET | [Retrieving Users](#retrieving-users)
-`/users?anniversary_date`     | GET | [Retrieve by Anniversary Date](#retrieve-by-anniversary-date)
-`/users?birthdate`            | GET | [Retrieve by Birthdate](#retrieve-by-birthdate)
-`/users?exclude_no_campaigns` | GET | [Retrieve if Signed Up for any Campaign](#retrieve-by-campaign-action)
-
-<h4 id="retrieving-users">Retrieving Users</h4>
-Get all users. By default, results will be paginated only returning a subset of all users.
+**Example Response:**
 
 ```
-GET /users
+201 Created
+Accept: application/json
+
+{
+  created_at: 2000-01-01T00:00:00Z,
+  sid: 100
+}
 ```
 
-**Additional Parameters:**  
-`page=<page_num>`: For pagination. Specifies the page number to skip to. _Default: 1_
 
-`page_size=<page_size>`: For pagination. Requires the `page` param to be set. Sets the page size. _Default: 100_
-
-**Successful Responses:**  
-`200 OK`: Request succeeded. Full user documents will be returned in an array. A query with no results will return an empty array.
-
-**Example Curl:**  
+<h3 id="submitting-report-back">Submitting a Campaign Report Back</h3>
+Submit and update a campaign report back for the logged in user.
 ```
-curl -X GET \
+POST /campaigns/:nid/reportback
+```
+
+**Open Question:** Do we support multipart POSTing of an image file?
+
+**Parameters:**
+
+```
+Content-Type: application/json
+
+{
+  /* The number of things done */
+  quantity: Number
+
+  /* The reason why the user participated */
+  why_participated: String,
+
+  /* An image URL of the action being taken */
+  file_url: String
+}
+```
+
+**Example Curl:**
+
+```
+curl -X POST \
   -H "X-DS-Application-Id: ${APPLICATION_ID}" \
   -H "X-DS-REST-API-Key: ${REST_API_KEY}" \
-  http://api.dosomething.org/1/users
+  -H "Session: ${SESSION_TOKEN}" \
+  -d '{report back data}' \
+  http://api.dosomething.org/1/campaigns/123/reportback
 ```
 
-<h4 id="retrieve-by-anniversary-date">Users by Anniversary Date</h4>
-Get all users who have an anniversary with subscribing to DoSomething.org. If a year is not specified, then it will return all users who have an anniversary on that day across all years.
+**Example Response:**
 
-**Query:**  
 ```
-GET /users?anniversary_date=<m-d-Y>
-GET /users?anniversary_date=<m-d>
-```
+201 Created
+Accept: application/json
 
-**Additional Parameters:**  
-`page=<page_num>`: For pagination. Specifies the page number to skip to. _Default: 1_
-
-`page_size=<page_size>`: For pagination. Requires the `page` param to be set. Sets the page size. _Default: 100_
-
-**Successful Responses:**  
-`200 OK`: Request succeeded. Full user documents will be returned in an array. A query with no results will return an empty array.
-
-**Example Curl:**  
-`TODO`
-
-<h4 id="retrieve-by-birthdate">Users by Birthdate</h4>
-Get all users who have a birthday on a given day. If a year is not specified, then it will return all users who have a birthday on that day across all years.
-
-**Query:**  
-```
-GET /users?birthdate=<m-d-Y>
-GET /users?birthdate=<m-d>
+{
+  created_at: 2000-01-01T00:00:00Z,
+  rbid: 100
+}
 ```
 
-**Additional Parameters:**  
-`page=<page_num>`: For pagination. Specifies the page number to skip to. _Default: 1_
-
-`page_size=<page_size>`: For pagination. Requires the `page` param to be set. Sets the page size. _Default: 100_
-
-**Successful Responses:**  
-`200 OK`: Request succeeded. Full user documents will be returned in an array. A query with no results will return an empty array.
-
-**Example Curl:**  
-`TODO`
-
-<h4 id="retrieve-by-campaign-action">Users with Campaign Actions</h4>
-Get all users who have taken a campaign action.
-
-**Query:**  
-```
-GET /users?exclude_no_campaigns=1
-```
-
-**Additional Parameters:**  
-`page=<page_num>`: For pagination. Specifies the page number to skip to. _Default: 1_
-
-`page_size=<page_size>`: For pagination. Requires the `page` param to be set. Sets the page size. _Default: 100_
-
-**Successful Responses:**  
-`200 OK`: Request succeeded. Full user documents will be returned in an array. A query with no results will return an empty array.
-
-**Example Curl:**  
-`TODO`
-
-## Other Status Codes
-`400 Bad Request`: Invalid usage of a resource.
-
-`401 Unauthorized`: Request is not authenticated. API token is missing or invalid.
-
-`403 Forbidden`: The request is not authorized. Credentials do not provide access to the resource.
-
-`406 Not Acceptable`: The requested resource is only capable of generating content not acceptable according to the Accept headers sent in the request. Currently only planning on supporting application/json.
-
-`422 Unprocessable Entity`: Invalid parameters provided in a request.
 
 ---
 
 ## Dependent Products
-* Android
-  * Querying & updating a user's campaign actions
-  * User Profile
-  * Registration
-  * Login / Logout
-* SMS
-  * Querying & updating a user's campaign actions
+#### v1
+* Android/iOS
+  * User registration
+  * User authentication
+  * Submitting campaign sign up and report back actions
+  * Displaying and editing user profile
+* [CGG Voting App](https://github.com/DoSomething/voting-app)
+  * User auto-registration
+
+#### v2
 * Email/Message Broker
   * Generating campaign digest emails
   * Generating anniversary emails
   * Generating birthday emails
+
+#### Future
+* SMS
+  * Querying & updating a user's campaign actions
 * Web
   * Querying & updating a user's campaign actions
   * User profile
+* Data
+  * Querying all user information
