@@ -13,9 +13,10 @@ URL | HTTP Verb | Functionality
 `/users`                          | POST  | [Registering a User](#registering-a-user)
 `/users`                          | GET   | [Retrieving a User](#retrieving-a-user)
 `/users`                          | PUT   | [Updating a User](#updating-a-user)
-`/users/campaigns`                | GET   | [Retrieving a User's Campaigns](#retrieving-users-campaigns)
-`/campaigns/:nid/signup`          | POST  | [Submitting a Campaign Sign Up](#submitting-sign-up)
-`/campaigns/:nid/reportback`      | POST  | [Submitting a Campaign Report Back](#submitting-report-back)
+`/users/campaigns`                | GET   | [Retrieving a User's Campaigns](#retrieving-a-users-campaigns)
+`/campaigns/:nid/signup`          | POST  | [Submitting a Campaign Sign Up](#submitting-a-campaign-sign-up)
+`/campaigns/:nid/reportback`      | POST  | [Submitting a Campaign Report Back](#submitting-a-campaign-report-back)
+`/campaigns/:nid/reportback`      | PUT   | [Updating a Campaign Report Back](#updating-a-campaign-report-back)
 
 
 ## Authentication
@@ -53,7 +54,7 @@ curl -X POST \
 ```
 
 **Example Response:**
-TBD: The response could also include the rest of the entirety of the user's document. See [Retrieving a User](#retrieving-a-user) and [Updating a User(#updating-a-user) for the full list of parameters.
+TBD: The response could also include the rest of the entirety of the user's document. See [Retrieving a User](#retrieving-a-user) and [Updating a User](#updating-a-user) for the full list of parameters.
 ```
 200 OK
 Accept: application/json
@@ -90,6 +91,8 @@ curl -X POST \
 ```
 200 OK
 ```
+
+## User Profile
 
 <h3 id="registering-a-user">Registering a User</h3>
 Create a new user.
@@ -142,8 +145,6 @@ Accept: application/json
 }
 ```
 
-## User Profile
-
 <h3 id="retrieving-a-user">Retrieving a User</h3>
 Get profile data for a specific user. This can be retrieved with either a Drupal UID, the database-generated ID, a mobile phone number, or an email address.
 
@@ -195,10 +196,10 @@ Accept: application/json
 Update a user resource.
 
 ```
-POST /users?drupal_uid=<drupal_uid>
-POST /users?doc_id=<doc_id>
-POST /users?mobile=<mobile>
-POST /users?email=<email>
+PUT /users?drupal_uid=<drupal_uid>
+PUT /users?doc_id=<doc_id>
+PUT /users?mobile=<mobile>
+PUT /users?email=<email>
 ```
 
 **Parameters:**  
@@ -283,7 +284,7 @@ Accept: application/json
 }
 ```
 
-<h3 id="retrieving-users-campaigns">Retrieving a User's Campaigns</h3>
+<h3 id="retrieving-a-users-campaigns">Retrieving a User's Campaigns</h3>
 Get the campaign actions of a specific user. This can be retrieved with either a Drupal UID, the document ID, a mobile phone number, or an email address.
 
 ```
@@ -331,8 +332,9 @@ Content-Type: application/json
 ]
 ```
 
+## User Campaign Actions
 
-<h3 id="submitting-sign-up">Submitting a Campaign Sign Up</h3>
+<h3 id="submitting-a-campaign-sign-up">Submitting a Campaign Sign Up</h3>
 Submit a campaign sign up for the logged in user.
 
 ```
@@ -346,7 +348,6 @@ curl -X POST \
   -H "X-DS-Application-Id: ${APPLICATION_ID}" \
   -H "X-DS-REST-API-Key: ${REST_API_KEY}" \
   -H "Session: ${SESSION_TOKEN}" \
-  -d '{sign up data}' \
   http://api.dosomething.org/1/campaigns/123/signup
 ```
 
@@ -363,8 +364,8 @@ Accept: application/json
 ```
 
 
-<h3 id="submitting-report-back">Submitting a Campaign Report Back</h3>
-Submit and update a campaign report back for the logged in user.
+<h3 id="submitting-a-campaign-report-back">Submitting a Campaign Report Back</h3>
+Submit a campaign report back for the logged in user.
 ```
 POST /campaigns/:nid/reportback
 ```
@@ -407,6 +408,52 @@ Accept: application/json
 
 {
   created_at: 2000-01-01T00:00:00Z,
+  rbid: 100
+}
+```
+
+<h3 id="updating-a-campaign-report-back">Updating a Campaign Report Back</h3>
+Update a campaign report back for the logged in user.
+```
+PUT /campaigns/:nid/reportback
+```
+
+**Parameters:**
+
+```
+Content-Type: application/json
+
+{
+  /* The number of things done */
+  quantity: Number
+
+  /* The reason why the user participated */
+  why_participated: String,
+
+  /* An image URL of the action being taken */
+  file_url: String
+}
+```
+
+**Example Curl:**
+
+```
+curl -X PUT \
+  -H "X-DS-Application-Id: ${APPLICATION_ID}" \
+  -H "X-DS-REST-API-Key: ${REST_API_KEY}" \
+  -H "Session: ${SESSION_TOKEN}" \
+  -d '{report back data}' \
+  http://api.dosomething.org/1/campaigns/123/reportback
+```
+
+**Example Response:**
+Request accepted to be processed asynchronously.
+```
+202 Accepted
+Accept: application/json
+
+{
+  updated_at: 2000-01-01T00:00:00Z,
   rbid: 100
 }
 ```
