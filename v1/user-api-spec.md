@@ -64,7 +64,7 @@ Accept: application/json
   phone: "555-555-5555",
   created_at: "2011-11-07T20:58:34.448Z",
   updated_at: "2011-11-07T20:58:34.448Z",
-  doc_id: "g7y9tkhB7O",
+  _id: "g7y9tkhB7O",
   session_token: "pnktnjyb996sj4p156gjtp4im"
 }
 ```
@@ -141,7 +141,7 @@ Accept: application/json
 
 {
   created_at: 2000-01-01T00:00:00Z,
-  doc_id: some sort of hash value
+  _id: some sort of hash value
 }
 ```
 
@@ -150,7 +150,7 @@ Get profile data for a specific user. This can be retrieved with either a Drupal
 
 ```
 GET /users?drupal_uid=<drupal_uid>
-GET /users?doc_id=<doc_id>
+GET /users?_id=<_id>
 GET /users?mobile=<mobile>
 GET /users?email=<email>
 ```
@@ -177,7 +177,7 @@ Accept: application/json
   first_name: First,
   last_name: Last,
   drupal_uid: 123456,
-  doc_id: some sort of hash value,
+  _id: some sort of hash value,
   campaigns: [
     {
       nid: 123,
@@ -283,7 +283,7 @@ Get the campaign actions of a specific user. This can be retrieved with either a
 
 ```
 GET /users/campaigns?drupal_uid=<drupal_uid>
-GET /users/campaigns?doc_id=<doc_id>
+GET /users/campaigns?_id=<_id>
 GET /users/campaigns?mobile=<mobile>
 GET /users/campaigns?email=<email>
 ```
