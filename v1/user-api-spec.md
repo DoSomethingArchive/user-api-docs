@@ -12,7 +12,7 @@ URL | HTTP Verb | Functionality
 `/logout`                         | POST  | [Logging Out](#logging-out)
 `/users`                          | POST  | [Registering a User](#registering-a-user)
 `/users`                          | GET   | [Retrieving a User](#retrieving-a-user)
-`/users`                          | PUT   | [Updating a User](#updating-a-user)
+`/users/:_id`                     | PUT   | [Updating a User](#updating-a-user)
 `/users/campaigns`                | GET   | [Retrieving a User's Campaigns](#retrieving-a-users-campaigns)
 `/campaigns/:nid/signup`          | POST  | [Submitting a Campaign Sign Up](#submitting-a-campaign-sign-up)
 `/campaigns/:nid/reportback`      | POST  | [Submitting a Campaign Report Back](#submitting-a-campaign-report-back)
@@ -196,14 +196,11 @@ Accept: application/json
 Update a user resource.
 
 ```
-PUT /users?drupal_uid=<drupal_uid>
-PUT /users?doc_id=<doc_id>
-PUT /users?mobile=<mobile>
-PUT /users?email=<email>
+PUT /users/:_id
 ```
 
 **Parameters:**  
-To update a user resource, a mobile number, email address, Drupal UID, or document ID needs to be provided in the URL.
+The user resource to update is specified by the unique database-generated document ID.
 ```
 Content-Type: application/json
 
@@ -216,9 +213,6 @@ Content-Type: application/json
 
   /* Drupal UID */
   drupal_uid: Number,
-
-  /* Database-generated ID */
-  doc_id: String,
 
   /* Mailing address */
   addr_street1: String,
