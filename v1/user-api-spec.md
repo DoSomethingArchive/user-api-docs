@@ -12,7 +12,7 @@ URL | HTTP Verb | Functionality
 `/logout`                         | POST  | [Logging Out](#logging-out)
 `/users`                          | POST  | [Registering a User](#registering-a-user)
 `/users`                          | GET   | [Retrieving a User](#retrieving-a-user)
-`/users`                          | PUT   | [Updating a User](#updating-a-user)
+`/users/:_id`                     | PUT   | [Updating a User](#updating-a-user)
 `/users/campaigns`                | GET   | [Retrieving a User's Campaigns](#retrieving-a-users-campaigns)
 `/campaigns/:nid/signup`          | POST  | [Submitting a Campaign Sign Up](#submitting-a-campaign-sign-up)
 `/campaigns/:nid/reportback`      | POST  | [Submitting a Campaign Report Back](#submitting-a-campaign-report-back)
@@ -64,7 +64,7 @@ Accept: application/json
   phone: "555-555-5555",
   created_at: "2011-11-07T20:58:34.448Z",
   updated_at: "2011-11-07T20:58:34.448Z",
-  doc_id: "g7y9tkhB7O",
+  _id: "g7y9tkhB7O",
   session_token: "pnktnjyb996sj4p156gjtp4im"
 }
 ```
@@ -141,7 +141,7 @@ Accept: application/json
 
 {
   created_at: 2000-01-01T00:00:00Z,
-  doc_id: some sort of hash value
+  _id: some sort of hash value
 }
 ```
 
@@ -150,7 +150,7 @@ Get profile data for a specific user. This can be retrieved with either a Drupal
 
 ```
 GET /users?drupal_uid=<drupal_uid>
-GET /users?doc_id=<doc_id>
+GET /users?_id=<_id>
 GET /users?mobile=<mobile>
 GET /users?email=<email>
 ```
@@ -177,7 +177,7 @@ Accept: application/json
   first_name: First,
   last_name: Last,
   drupal_uid: 123456,
-  doc_id: some sort of hash value,
+  _id: some sort of hash value,
   campaigns: [
     {
       nid: 123,
@@ -196,14 +196,11 @@ Accept: application/json
 Update a user resource.
 
 ```
-PUT /users?drupal_uid=<drupal_uid>
-PUT /users?doc_id=<doc_id>
-PUT /users?mobile=<mobile>
-PUT /users?email=<email>
+PUT /users/:_id
 ```
 
 **Parameters:**  
-To update a user resource, a mobile number, email address, Drupal UID, or document ID needs to be provided in the URL.
+The user resource to update is specified by the unique database-generated document ID.
 ```
 Content-Type: application/json
 
@@ -216,9 +213,6 @@ Content-Type: application/json
 
   /* Drupal UID */
   drupal_uid: Number,
-
-  /* Database-generated ID */
-  doc_id: String,
 
   /* Mailing address */
   addr_street1: String,
@@ -289,7 +283,7 @@ Get the campaign actions of a specific user. This can be retrieved with either a
 
 ```
 GET /users/campaigns?drupal_uid=<drupal_uid>
-GET /users/campaigns?doc_id=<doc_id>
+GET /users/campaigns?_id=<_id>
 GET /users/campaigns?mobile=<mobile>
 GET /users/campaigns?email=<email>
 ```
